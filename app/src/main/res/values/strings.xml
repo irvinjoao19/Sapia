@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Sapia</string>
+    <string name="try_again">Intentalo nuevamente</string>
+    <string name="message">Mensaje</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ajuste">Ajuste</string>
+    <string name="contentGps">Gps desactivado, necesitas activarlo para poder continuar ?</string>
+    <string name="usuario">Usuario</string>
+    <string name="imagen">IMAGEN</string>
+    <string name="title_menu">Menu Principal</string>
+    <string name="seguro_sincronizar">Estas seguro de sincronizar ?</string>
+    <string name="sincronizar">Sincronizar</string>
+    <string name="tecnico">Tecnico</string>
+    <string name="reporte_atencion">Reporte de Atención</string>
+    <string name="title_services">Servicios</string>
+    <string name="tab1">Generales</string>
+    <string name="tab2">Descripción</string>
+    <string name="tab3">Conformidad</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="detalle">Detalle del incidente o solicitud</string>
+    <string name="cliente">Cliente</string>
+    <string name="alternativos">Nombres Alternativos</string>
+    <string name="recomendaciones">Recomendaciones</string>
+    <string name="fecha_conformidad">Fecha de Conformidad</string>
+    <string name="representante_cliente">Representante del Cliente</string>
+    <string name="version">1.0</string>
+    <string name="user">Usuario</string>
+    <string name="pass">Contraseña</string>
+    <string name="ingresar">Enviar</string>
+    <string name="login">Iniciando Sesión</string>
+    <string name="permission">No cuentas con permisos</string>
+    <string name="error_pass">Contraseña Incorrecta</string>
+    <string name="error_user">Usuario no existe.</string>
+    <string name="message_permission">Permisos Denegados</string>
+    <string name="content_permission">Debes de aceptar los permisos para poder acceder al aplicativo</string>
+    <string name="no_sincronizar">No se pudo sincronizar</string>
+    <string name="synchronization_complet">Sincronización Completa</string>
+    <string name="new_update">Actualizar Aplicativo</string>
+</resources>
