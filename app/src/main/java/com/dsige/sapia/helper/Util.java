@@ -107,11 +107,10 @@ public class Util {
         return FechaActual;
     }
 
-    public static String getFechaActualForPhoto(int pais, int proyecto, int delegacion, int grupo, int usuarioId) {
+    public static String getFechaActualForPhoto() {
         Date date = new Date();
         @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy_HHmmssSSS");
-        FechaActual = format.format(date);
-        return pais + "_" + grupo + "_" + delegacion + "_" + proyecto + "_" + usuarioId + "_" + FechaActual + ".jpg";
+        return  format.format(date) + ".jpg";
     }
 
     public static void toggleTextInputLayoutError(@NonNull TextInputLayout textInputLayout,

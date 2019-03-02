@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
-        android:elevation="3dp"
+        android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/TabLayout_Theme"
         tools:ignore="UnusedAttribute" />

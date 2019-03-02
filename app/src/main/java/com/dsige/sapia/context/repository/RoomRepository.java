@@ -1,5 +1,6 @@
 package com.dsige.sapia.context.repository;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -11,10 +12,13 @@ import com.dsige.sapia.model.Usuario;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -60,10 +64,15 @@ public class RoomRepository {
         return appDataBase.userDao().getUserTask();
     }
 
+    public Completable deleteUser(Usuario user) {
+        return Completable.fromAction(() -> appDataBase.userDao().deleteUserTask(user));
+    }
+
 
     // TODO: SINCRONIZACION
 
     public void insertMigracion(Migracion migracion) {
+
 
         Completable.fromAction(() -> appDataBase.migrationDao().inserMigrationTask(migracion))
                 .subscribeOn(Schedulers.io())
@@ -88,5 +97,9 @@ public class RoomRepository {
 
     public LiveData<List<Personal>> getListPersonal(int cargoID) {
         return appDataBase.migrationDao().getPersonalsTask(cargoID);
+    }
+
+    public Flowable<Migracion> getMigracion() {
+        return appDataBase.migrationDao().getMigracionTask();
     }
 }

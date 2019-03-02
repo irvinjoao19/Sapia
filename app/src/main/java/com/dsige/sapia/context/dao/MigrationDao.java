@@ -11,6 +11,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import io.reactivex.Flowable;
 
 @Dao
 public interface MigrationDao {
@@ -24,5 +25,8 @@ public interface MigrationDao {
 
     @Query("SELECT personalId,cargoId,nombrePersonal,nombreCargo,estado FROM Migracion,Personal where Personal.cargoId = :cargoId")
     LiveData<List<Personal>> getPersonalsTask(int cargoId);
+
+    @Query("SELECT * FROM Migracion")
+    Flowable<Migracion> getMigracionTask();
 
 }

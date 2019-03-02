@@ -11,7 +11,7 @@
     <string name="title_menu">Menu Principal</string>
     <string name="seguro_sincronizar">Estas seguro de sincronizar ?</string>
     <string name="sincronizar">Sincronizar</string>
-    <string name="tecnico">Tecnico</string>
+    <string name="tecnico">Servicio Técnico</string>
     <string name="reporte_atencion">Reporte de Atención</string>
     <string name="title_services">Servicios</string>
     <string name="tab1">Generales</string>
@@ -39,4 +39,9 @@
     <string name="no_sincronizar">No se pudo sincronizar</string>
     <string name="synchronization_complet">Sincronización Completa</string>
     <string name="new_update">Actualizar Aplicativo</string>
+    <string name="firma">Firma</string>
+    <string name="close">Salir</string>
+    <string name="language">Idioma</string>
+    <string name="description_message">Estas seguro de salir ?</string>
+    <string name="singin">Login</string>
 </resources>

@@ -53,6 +53,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/primary_text"
                                 android:text="Cliente" />
 
                             <TextView
@@ -70,6 +71,7 @@
 
                             <TextView
                                 android:layout_width="wrap_content"
+                                android:textColor="@color/primary_text"
                                 android:layout_height="wrap_content"
                                 android:gravity="end"
                                 android:text="CP" />
@@ -95,6 +97,7 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:textColor="@color/primary_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Usuario Cliente" />
@@ -116,6 +119,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="end"
+                                android:textColor="@color/primary_text"
                                 android:text="Ticket Cliente" />
 
                             <TextView
@@ -139,6 +143,7 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:textColor="@color/primary_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Ticket Sapia" />
@@ -157,6 +162,7 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:textColor="@color/primary_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="end"
@@ -183,6 +189,7 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:textColor="@color/primary_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Fecha" />
@@ -203,6 +210,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:textColor="@color/primary_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Detalle Reportado" />

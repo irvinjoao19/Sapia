@@ -10,13 +10,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
@@ -25,6 +29,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.dsige.sapia.R;
@@ -35,10 +41,8 @@ import com.dsige.sapia.helper.MessageError;
 import com.dsige.sapia.helper.Util;
 import com.dsige.sapia.model.MenuPrincipal;
 import com.dsige.sapia.model.Migracion;
-import com.dsige.sapia.model.Personal;
 import com.dsige.sapia.model.Usuario;
 import com.dsige.sapia.ui.adapters.MenuAdapter;
-import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
 import java.io.IOException;
@@ -57,6 +61,61 @@ public class MainActivity extends AppCompatActivity {
 
     public RoomRepository roomRepository;
     public SapiaInterfaces sapiaInterfaces;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        roomRepository.closeRoom();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this, R.style.AppTheme));
+                builder.setTitle(R.string.message);
+                builder.setMessage(R.string.description_message);
+                builder.setPositiveButton(R.string.aceptar, (d, id) -> {
+                    LiveData<Usuario> u = roomRepository.getUsuario();
+                    u.observe(this, usuario -> {
+                        Completable logout = roomRepository.deleteUser(usuario);
+                        logout.subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new CompletableObserver() {
+                                    @Override
+                                    public void onSubscribe(Disposable d1) {
+
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+                                        d.dismiss();
+                                        logOut();
+                                        System.exit(0);
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.i("TAG", e.toString());
+                                    }
+                                });
+                    });
+                });
+                builder.setNegativeButton(R.string.cancel, (d, i) -> d.dismiss());
+                AlertDialog dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,11 +163,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, ServicesActivity.class));
                     break;
                 case 3:
-                    LiveData<List<Personal>> listLiveData = roomRepository.getListPersonal(1);
-                    listLiveData.observe(this, personals -> {
-                        String json = new Gson().toJson(personals);
-                        Log.i("TAG", json);
-                    });
 
                     break;
                 case 4:
@@ -204,4 +258,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void logOut() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
 }

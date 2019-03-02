@@ -3,11 +3,17 @@ package com.dsige.sapia.ui.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.dsige.sapia.R;
+import com.dsige.sapia.helper.PaintView;
+
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -67,7 +73,18 @@ public class ConformiteFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_conformite, container, false);
+        View view = inflater.inflate(R.layout.fragment_conformite, container, false);
+        bindUI(view);
+        return view;
+    }
+
+
+    private void bindUI(View view) {
+        PaintView paintView = view.findViewById(R.id.paintView);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        paintView.init(metrics);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
