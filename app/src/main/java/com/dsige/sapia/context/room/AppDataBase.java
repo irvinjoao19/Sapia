@@ -2,7 +2,7 @@ package com.dsige.sapia.context.room;
 
 import android.content.Context;
 
-import com.dsige.sapia.context.dao.MigrationDao;
+import com.dsige.sapia.context.dao.ConfigurationDao;
 import com.dsige.sapia.context.dao.UserDao;
 import com.dsige.sapia.model.Cliente;
 import com.dsige.sapia.model.EstadoTicket;
@@ -30,7 +30,7 @@ public abstract class AppDataBase extends RoomDatabase {
 
     public abstract UserDao userDao();
 
-    public abstract MigrationDao migrationDao();
+    public abstract ConfigurationDao migrationDao();
 
     private static volatile AppDataBase INSTANCE;
 

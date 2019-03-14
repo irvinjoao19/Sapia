@@ -20,12 +20,7 @@ public class Permission {
 
     public static int CAMERA_REQUEST = 1;
     public static int GALERY_REQUEST = 2;
-    public static int SPEECH_REQUEST_OBRA = 3;
-    public static int SPEECH_REQUEST_TRABAJO = 4;
-    public static int SPEECH_REQUEST_PLACA = 5;
-    public static int SPEECH_REQUEST_OBSERVACION = 6;
-    public static int SPEECH_REQUEST_COMENTARIO = 7;
-    public static int SPEECH_REQUEST_ACCIONPROPUESTA = 8;
+    public static int SPEECH_REQUEST_DETALLE = 3;
 
 
     public static boolean hasPermissions(Context context, String... permissions) {

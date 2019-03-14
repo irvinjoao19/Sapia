@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiRetrofit {
 
-    private String BASE_URL_LOCAL = "http://192.168.0.5:8085/api/";
+    private String BASE_URL_LOCAL = "http://192.168.0.6:8085/api/";
 
     private Retrofit retrofit = null;
     private GsonConverterFactory gsonFactory = GsonConverterFactory.create();

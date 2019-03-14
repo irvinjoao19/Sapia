@@ -2,6 +2,7 @@ package com.dsige.sapia.context.dao;
 
 import com.dsige.sapia.model.Migracion;
 import com.dsige.sapia.model.Personal;
+import com.dsige.sapia.model.SapiaRegistro;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import androidx.room.Query;
 import io.reactivex.Flowable;
 
 @Dao
-public interface MigrationDao {
+public interface ConfigurationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void inserMigrationTask(Migracion migracion);
@@ -28,5 +29,8 @@ public interface MigrationDao {
 
     @Query("SELECT * FROM Migracion")
     Flowable<Migracion> getMigracionTask();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertRegistro(SapiaRegistro registro);
 
 }

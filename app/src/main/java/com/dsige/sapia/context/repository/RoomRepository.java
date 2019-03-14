@@ -1,6 +1,5 @@
 package com.dsige.sapia.context.repository;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -12,17 +11,11 @@ import com.dsige.sapia.model.Usuario;
 import java.util.List;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.MaybeObserver;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class RoomRepository {
@@ -102,4 +95,6 @@ public class RoomRepository {
     public Flowable<Migracion> getMigracion() {
         return appDataBase.migrationDao().getMigracionTask();
     }
+
+
 }

@@ -44,4 +44,5 @@
     <string name="language">Idioma</string>
     <string name="description_message">Estas seguro de salir ?</string>
     <string name="singin">Login</string>
+    <string name="compatible_device">Dispositivo no compatible para esta opción</string>
 </resources>
