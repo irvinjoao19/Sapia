@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void bindUI() {
-        roomRepository = new RoomRepository(this);
+        roomRepository = new RoomRepository(this,this);
         sapiaInterfaces = new ApiRetrofit().getAPI().create(SapiaInterfaces.class);
         buttonEnviar.setOnClickListener(this);
     }

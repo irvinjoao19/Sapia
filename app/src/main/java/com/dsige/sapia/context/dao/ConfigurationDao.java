@@ -23,14 +23,19 @@ public interface ConfigurationDao {
     @Delete
     void deleteMigrationTask(Migracion migracion);
 
-
-    @Query("SELECT personalId,cargoId,nombrePersonal,nombreCargo,estado FROM Migracion,Personal where Personal.cargoId = :cargoId")
-    LiveData<List<Personal>> getPersonalsTask(int cargoId);
-
     @Query("SELECT * FROM Migracion")
     Flowable<Migracion> getMigracionTask();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertRegistro(SapiaRegistro registro);
+
+    @Query("SELECT * FROM SapiaRegistro WHERE registroId =:id")
+    LiveData<SapiaRegistro> getRegistro(int id);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertPersonal(Personal personal);
+
+    @Query("SELECT * FROM Personal")
+    LiveData<List<Personal>> getPersonal();
 
 }

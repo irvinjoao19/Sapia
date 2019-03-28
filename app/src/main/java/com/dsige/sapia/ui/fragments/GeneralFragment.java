@@ -16,9 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dsige.sapia.R;
+import com.dsige.sapia.context.repository.RoomRepository;
 import com.dsige.sapia.helper.Mensaje;
 import com.dsige.sapia.helper.Permission;
 import com.dsige.sapia.helper.Util;
+import com.dsige.sapia.model.SapiaRegistro;
+import com.dsige.sapia.model.SapiaRegistroDetalle;
+import com.dsige.sapia.ui.adapters.GeneralRegisterDetalleAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -30,9 +34,18 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -58,14 +71,15 @@ public class GeneralFragment extends Fragment implements View.OnClickListener {
 
     private OnFragmentInteractionListener mListener;
 
-
+    @BindView(R.id.recyclerView)
+    RecyclerView recyclerView;
     @BindView(R.id.editTextDetalle)
     TextInputEditText editTextDetalle;
     @BindView(R.id.fabGeneral)
     FloatingActionButton fabGeneral;
 
-
     private Unbinder unbinder;
+    private RoomRepository roomRepository;
 
     public GeneralFragment() {
         // Required empty public constructor
@@ -106,7 +120,21 @@ public class GeneralFragment extends Fragment implements View.OnClickListener {
 
     private void bindUI(View view) {
         unbinder = ButterKnife.bind(this, view);
+        roomRepository = new RoomRepository(this, getContext());
         fabGeneral.setOnClickListener(this);
+        GeneralRegisterDetalleAdapter detallePhotoInspeccionAdapter = new GeneralRegisterDetalleAdapter(new GeneralRegisterDetalleAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(SapiaRegistroDetalle d, int position) {
+                Util.toastMensaje(getContext(), d.getDescripcion());
+            }
+        });
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(detallePhotoInspeccionAdapter);
+        LiveData<SapiaRegistro> sapiaRegistroLiveData = roomRepository.getRegistro(1);
+        sapiaRegistroLiveData.observe(this, sapiaRegistro -> detallePhotoInspeccionAdapter.addItems(sapiaRegistro.getSapiaRegistroDetalles()));
         microTouchListener(editTextDetalle, Permission.SPEECH_REQUEST_DETALLE, getString(R.string.detalle));
     }
 
@@ -205,8 +233,39 @@ public class GeneralFragment extends Fragment implements View.OnClickListener {
             if (mensaje == null) {
                 Util.snackBarMensaje(getView(), "Error");
             } else {
+                saveRegisterDetalle();
 //                saveDetalleFotoInspeccion(anomaliaId, ResultadoId, DetalleInspeccionId, nameImg, mensaje.getHeader());
             }
         }
+    }
+
+    private void saveRegisterDetalle() {
+
+        SapiaRegistroDetalle s = new SapiaRegistroDetalle();
+        s.setUrlPhoto(nameImg);
+        s.setDescripcion("DESCRIPCION" + nameImg);
+        s.setEstado(1);
+
+
+        Completable completable = roomRepository.insertRegisterWithDetail(1, s);
+        completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Util.toastMensaje(getContext(), "GUARDADO");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
+
     }
 }

@@ -12,12 +12,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
-import io.reactivex.Maybe;
-import io.reactivex.MaybeObserver;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -116,13 +112,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        roomRepository = new RoomRepository(this);
+        roomRepository = new RoomRepository(this,this);
         existsUser(roomRepository.getUsuario());
     }
 
@@ -146,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bindUI() {
-        roomRepository = new RoomRepository(this);
         sapiaInterfaces = new ApiRetrofit().getAPI().create(SapiaInterfaces.class);
         List<MenuPrincipal> menus = new ArrayList<>();
         menus.add(new MenuPrincipal(1, getResources().getString(R.string.sincronizar), R.mipmap.ic_launcher));
@@ -264,5 +258,4 @@ public class MainActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
-
 }

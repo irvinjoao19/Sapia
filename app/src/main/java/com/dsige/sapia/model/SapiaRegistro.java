@@ -13,6 +13,7 @@ public class SapiaRegistro {
     private int registroId;
     private String nombre;
     private int estado;
+    @Ignore
     private List<SapiaRegistroDetalle> sapiaRegistroDetalles;
 
     public SapiaRegistro() {

@@ -8,6 +8,8 @@ import com.dsige.sapia.model.Cliente;
 import com.dsige.sapia.model.EstadoTicket;
 import com.dsige.sapia.model.Migracion;
 import com.dsige.sapia.model.Personal;
+import com.dsige.sapia.model.SapiaRegistro;
+import com.dsige.sapia.model.SapiaRegistroDetalle;
 import com.dsige.sapia.model.StatusTicket;
 import com.dsige.sapia.model.Usuario;
 
@@ -22,15 +24,17 @@ import androidx.room.TypeConverters;
         Cliente.class,
         Personal.class,
         EstadoTicket.class,
-        StatusTicket.class},
-        version = 2,
+        StatusTicket.class,
+        SapiaRegistro.class,
+        SapiaRegistroDetalle.class},
+        version = 3,
         exportSchema = false)
 @TypeConverters({Converts.class})
 public abstract class AppDataBase extends RoomDatabase {
 
     public abstract UserDao userDao();
 
-    public abstract ConfigurationDao migrationDao();
+    public abstract ConfigurationDao configurationDao();
 
     private static volatile AppDataBase INSTANCE;
 

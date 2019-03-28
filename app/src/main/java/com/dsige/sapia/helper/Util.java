@@ -56,7 +56,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class Util {
 
-    public static final String FolderImg = "INSPECCION_IMG";
+    public static final String FolderImg = "SAPIA_IMG";
     private static String FechaActual;
     private static Date date;
 
