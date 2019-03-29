@@ -1,8 +1,10 @@
 package com.dsige.sapia.ui.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +22,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.dsige.sapia.R;
-import com.dsige.sapia.context.repository.RoomRepository;
 import com.dsige.sapia.context.retrofit.ApiRetrofit;
 import com.dsige.sapia.context.retrofit.apiInterfaces.SapiaInterfaces;
+import com.dsige.sapia.context.room.RoomViewModel;
 import com.dsige.sapia.helper.Permission;
 import com.dsige.sapia.helper.Util;
 import com.dsige.sapia.model.Personal;
@@ -51,7 +53,7 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
     @BindView(R.id.fabPersonal)
     FloatingActionButton fabPersonal;
 
-    RoomRepository roomRepository;
+    RoomViewModel roomViewModel;
     SapiaInterfaces sapiaInterfaces;
     PersonalAdapter personalAdapter;
 
@@ -60,7 +62,7 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
         ButterKnife.bind(this);
-        roomRepository = new RoomRepository(this, this);
+        roomViewModel = ViewModelProviders.of(this).get(RoomViewModel.class);
         bindToolbar();
         bindUI();
     }
@@ -74,24 +76,32 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
         fabPersonal.setOnClickListener(this);
         sapiaInterfaces = new ApiRetrofit().getAPI().create(SapiaInterfaces.class);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        personalAdapter = new PersonalAdapter((p, v, position) ->
-                startActivityForResult(new Intent(this, RegisterPersonalActivity.class), Permission.PERSONAL_REQUEST));
+        personalAdapter = new PersonalAdapter(new PersonalAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Personal p, View v, int position) {
+                Util.toastMensaje(PersonalActivity.this, p.getNombreCargo());
+            }
+
+            @Override
+            public void onLongClick(Personal p, View v, int position) {
+                deleteMensaje(p);
+            }
+        });
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(personalAdapter);
-        LiveData<List<Personal>> personalData = roomRepository.getPersonals();
+        LiveData<List<Personal>> personalData = roomViewModel.getPersonals();
         personalData.observe(this, personals -> personalAdapter.addItems(personals));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == Permission.PERSONAL_REQUEST) {
             if (resultCode == Permission.PERSONAL_INSERT_REQUEST) {
                 String personal = data.getStringExtra("personal");
                 Personal p = new Gson().fromJson(personal, Personal.class);
-                Completable completable = roomRepository.insertPersonal(p);
+                Completable completable = roomViewModel.insertPersonal(p);
                 completable.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new CompletableObserver() {
@@ -110,10 +120,41 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
                                 Log.i("TAG", e.toString());
                             }
                         });
-
-
 //                aprobacionAdapter.clearByPosition(position);
             }
         }
+    }
+
+    private void deleteMensaje(Personal p) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Mensaje")
+                .setMessage(String.format("Deseas elimar a %s", p.getNombrePersonal().toUpperCase()))
+                .setPositiveButton("Aceptar", (dialog, which) -> {
+                    roomViewModel.deletePersonal(p)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new CompletableObserver() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
+
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                    Util.toastMensaje(PersonalActivity.this, "Eliminado");
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+                            });
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        dialog.show();
     }
 }

@@ -68,10 +68,16 @@ public class PersonalAdapter extends RecyclerView.Adapter<PersonalAdapter.ViewHo
             textViewName.setText(p.getNombrePersonal().toUpperCase());
             textViewAddress.setText(p.getNombreCargo());
             itemView.setOnClickListener(view -> listener.onItemClick(p, view, getAdapterPosition()));
+            itemView.setOnLongClickListener(v -> {
+                listener.onLongClick(p, v, getAdapterPosition());
+                return true;
+            });
         }
     }
 
     public interface OnItemClickListener {
         void onItemClick(Personal p, View v, int position);
+
+        void onLongClick(Personal p, View v, int position);
     }
 }

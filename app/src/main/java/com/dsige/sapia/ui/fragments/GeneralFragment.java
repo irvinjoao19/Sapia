@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.dsige.sapia.R;
 import com.dsige.sapia.context.repository.RoomRepository;
+import com.dsige.sapia.context.room.RoomViewModel;
 import com.dsige.sapia.helper.Mensaje;
 import com.dsige.sapia.helper.Permission;
 import com.dsige.sapia.helper.Util;
@@ -35,6 +36,7 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -80,6 +82,7 @@ public class GeneralFragment extends Fragment implements View.OnClickListener {
 
     private Unbinder unbinder;
     private RoomRepository roomRepository;
+    RoomViewModel roomViewModel;
 
     public GeneralFragment() {
         // Required empty public constructor
@@ -120,14 +123,9 @@ public class GeneralFragment extends Fragment implements View.OnClickListener {
 
     private void bindUI(View view) {
         unbinder = ButterKnife.bind(this, view);
-        roomRepository = new RoomRepository(this, getContext());
+        roomViewModel = ViewModelProviders.of(this).get(RoomViewModel.class);
         fabGeneral.setOnClickListener(this);
-        GeneralRegisterDetalleAdapter detallePhotoInspeccionAdapter = new GeneralRegisterDetalleAdapter(new GeneralRegisterDetalleAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(SapiaRegistroDetalle d, int position) {
-                Util.toastMensaje(getContext(), d.getDescripcion());
-            }
-        });
+        GeneralRegisterDetalleAdapter detallePhotoInspeccionAdapter = new GeneralRegisterDetalleAdapter((d, position) -> Util.toastMensaje(getContext(), d.getDescripcion()));
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -247,7 +245,7 @@ public class GeneralFragment extends Fragment implements View.OnClickListener {
         s.setEstado(1);
 
 
-        Completable completable = roomRepository.insertRegisterWithDetail(1, s);
+        Completable completable = roomRepository.insertRegisterWithDetail(this, 1, s);
         completable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {

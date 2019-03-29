@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,9 +31,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.dsige.sapia.R;
-import com.dsige.sapia.context.repository.RoomRepository;
 import com.dsige.sapia.context.retrofit.ApiRetrofit;
 import com.dsige.sapia.context.retrofit.apiInterfaces.SapiaInterfaces;
+import com.dsige.sapia.context.room.RoomViewModel;
 import com.dsige.sapia.helper.MessageError;
 import com.dsige.sapia.helper.Util;
 import com.dsige.sapia.model.MenuPrincipal;
@@ -55,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    public RoomRepository roomRepository;
-    public SapiaInterfaces sapiaInterfaces;
+    SapiaInterfaces sapiaInterfaces;
+    RoomViewModel roomViewModel;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        roomRepository.closeRoom();
+        roomViewModel.CloseRoom();
     }
 
     @Override
@@ -78,9 +79,9 @@ public class MainActivity extends AppCompatActivity {
                 builder.setTitle(R.string.message);
                 builder.setMessage(R.string.description_message);
                 builder.setPositiveButton(R.string.aceptar, (d, id) -> {
-                    LiveData<Usuario> u = roomRepository.getUsuario();
+                    LiveData<Usuario> u = roomViewModel.getUsuario();
                     u.observe(this, usuario -> {
-                        Completable logout = roomRepository.deleteUser(usuario);
+                        Completable logout = roomViewModel.deleteUser(usuario);
                         logout.subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new CompletableObserver() {
@@ -117,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        roomRepository = new RoomRepository(this,this);
-        existsUser(roomRepository.getUsuario());
+        roomViewModel = ViewModelProviders.of(this).get(RoomViewModel.class);
+        existsUser(roomViewModel.getUsuario());
     }
 
     private void existsUser(LiveData<Usuario> usuario) {
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onNext(Migracion m) {
                         mensaje[0] = m.getMensaje();
                         if (mensaje[0].contains("Sincronización")) {
-                            roomRepository.insertMigracion(m);
+                            roomViewModel.insertMigracion(m);
                         }
                     }
 

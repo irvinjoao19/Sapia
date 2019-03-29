@@ -13,7 +13,7 @@ import com.dsige.sapia.R;
 import com.dsige.sapia.helper.Permission;
 import com.dsige.sapia.helper.Util;
 import com.dsige.sapia.model.Personal;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
@@ -49,7 +49,7 @@ public class RegisterPersonalActivity extends AppCompatActivity implements View.
     TextInputEditText editTextCargo;
 
     @BindView(R.id.fabRegister)
-    FloatingActionButton fabRegister;
+    ExtendedFloatingActionButton fabRegister;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 

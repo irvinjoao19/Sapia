@@ -1,5 +1,6 @@
 package com.dsige.sapia.context.repository;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -13,9 +14,7 @@ import com.dsige.sapia.model.Usuario;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LiveData;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -24,33 +23,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class RoomRepository extends LifecycleRegistry {
+public class RoomRepository {
 
     private AppDataBase appDataBase;
-    private LifecycleOwner provider;
 
-    /**
-     * Creates a new LifecycleRegistry for the given provider.
-     * <p>
-     * You should usually create this inside your LifecycleOwner class's constructor and hold
-     * onto the same instance.
-     *
-     * @param provider The owner LifecycleOwner
-     */
-    public RoomRepository(@NonNull LifecycleOwner provider, Context context) {
-        super(provider);
-        this.provider = provider;
-        this.appDataBase = AppDataBase.getDatabase(context);
+    public RoomRepository(Application application) {
+        this.appDataBase = AppDataBase.getDatabase(application);
     }
-
-//    public RoomRepository(Context context) {
-//        this.appDataBase = AppDataBase.getDatabase(context);
-//    }
 
     public void closeRoom() {
         appDataBase.close();
     }
-
 
     public void insertUser(Usuario user) {
         Completable.fromAction(() -> appDataBase.userDao().insertUserTask(user))
@@ -119,10 +102,10 @@ public class RoomRepository extends LifecycleRegistry {
         return appDataBase.configurationDao().getRegistro(id);
     }
 
-    public Completable insertRegisterWithDetail(int id, SapiaRegistroDetalle d) {
+    public Completable insertRegisterWithDetail(LifecycleOwner owner, int id, SapiaRegistroDetalle d) {
         return Completable.fromAction(() -> {
             LiveData<SapiaRegistro> registro = appDataBase.configurationDao().getRegistro(id);
-            registro.observe(provider, s -> {
+            registro.observe(owner, s -> {
                 List<SapiaRegistroDetalle> sapiaRegistroDetalles = new ArrayList<>();
                 sapiaRegistroDetalles.add(d);
                 s.setSapiaRegistroDetalles(sapiaRegistroDetalles);
@@ -139,6 +122,10 @@ public class RoomRepository extends LifecycleRegistry {
 
     public Completable insertPersonal(Personal p) {
         return Completable.fromAction(() -> appDataBase.configurationDao().insertPersonal(p));
+    }
+
+    public Completable deletePersonal(Personal p) {
+        return Completable.fromAction(() -> appDataBase.configurationDao().deletePersonal(p));
     }
 
 }

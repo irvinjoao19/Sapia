@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
@@ -27,9 +28,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.dsige.sapia.R;
-import com.dsige.sapia.context.repository.RoomRepository;
 import com.dsige.sapia.context.retrofit.ApiRetrofit;
 import com.dsige.sapia.context.retrofit.apiInterfaces.SapiaInterfaces;
+import com.dsige.sapia.context.room.RoomViewModel;
 import com.dsige.sapia.helper.MessageError;
 import com.dsige.sapia.helper.Permission;
 import com.dsige.sapia.helper.Util;
@@ -95,15 +96,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @BindView(R.id.buttonEnviar)
     MaterialButton buttonEnviar;
 
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
-    private SapiaInterfaces sapiaInterfaces;
-    private RoomRepository roomRepository;
+    AlertDialog.Builder builder;
+    AlertDialog dialog;
+    SapiaInterfaces sapiaInterfaces;
+    RoomViewModel roomRepository;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        roomRepository.closeRoom();
+        roomRepository.CloseRoom();
     }
 
     @Override
@@ -118,7 +119,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void bindUI() {
-        roomRepository = new RoomRepository(this,this);
+        roomRepository = ViewModelProviders.of(this).get(RoomViewModel.class);
         sapiaInterfaces = new ApiRetrofit().getAPI().create(SapiaInterfaces.class);
         buttonEnviar.setOnClickListener(this);
     }

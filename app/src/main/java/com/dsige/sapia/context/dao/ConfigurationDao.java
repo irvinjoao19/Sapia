@@ -38,4 +38,7 @@ public interface ConfigurationDao {
     @Query("SELECT * FROM Personal")
     LiveData<List<Personal>> getPersonal();
 
+    @Delete
+    void deletePersonal(Personal p);
+
 }
