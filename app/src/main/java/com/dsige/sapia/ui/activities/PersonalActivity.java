@@ -1,7 +1,6 @@
 package com.dsige.sapia.ui.activities;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
@@ -10,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dagger.android.support.DaggerAppCompatActivity;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -22,12 +22,11 @@ import android.util.Log;
 import android.view.View;
 
 import com.dsige.sapia.R;
-import com.dsige.sapia.context.retrofit.ApiRetrofit;
-import com.dsige.sapia.context.retrofit.apiInterfaces.SapiaInterfaces;
-import com.dsige.sapia.context.room.RoomViewModel;
+import com.dsige.sapia.data.viewModel.PersonalViewModel;
+import com.dsige.sapia.data.viewModel.ViewModelFactory;
 import com.dsige.sapia.helper.Permission;
 import com.dsige.sapia.helper.Util;
-import com.dsige.sapia.model.Personal;
+import com.dsige.sapia.data.local.model.Personal;
 import com.dsige.sapia.ui.adapters.PersonalAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -35,7 +34,9 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.Objects;
 
-public class PersonalActivity extends AppCompatActivity implements View.OnClickListener {
+import javax.inject.Inject;
+
+public class PersonalActivity extends DaggerAppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
@@ -53,8 +54,10 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
     @BindView(R.id.fabPersonal)
     FloatingActionButton fabPersonal;
 
-    RoomViewModel roomViewModel;
-    SapiaInterfaces sapiaInterfaces;
+    @Inject
+    ViewModelFactory viewModelFactory;
+
+    PersonalViewModel personalViewModel;
     PersonalAdapter personalAdapter;
 
     @Override
@@ -62,7 +65,7 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
         ButterKnife.bind(this);
-        roomViewModel = ViewModelProviders.of(this).get(RoomViewModel.class);
+        personalViewModel = ViewModelProviders.of(this, viewModelFactory).get(PersonalViewModel.class);
         bindToolbar();
         bindUI();
     }
@@ -74,12 +77,16 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
 
     private void bindUI() {
         fabPersonal.setOnClickListener(this);
-        sapiaInterfaces = new ApiRetrofit().getAPI().create(SapiaInterfaces.class);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         personalAdapter = new PersonalAdapter(new PersonalAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Personal p, View v, int position) {
-                Util.toastMensaje(PersonalActivity.this, p.getNombreCargo());
+                String personal = new Gson().toJson(p);
+                startActivityForResult(new Intent(PersonalActivity.this, RegisterPersonalActivity.class)
+                                .putExtra("personal", personal)
+                                .putExtra("update", true)
+
+                        , Permission.PERSONAL_REQUEST);
             }
 
             @Override
@@ -90,7 +97,7 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(personalAdapter);
-        LiveData<List<Personal>> personalData = roomViewModel.getPersonals();
+        LiveData<List<Personal>> personalData = personalViewModel.getPersonals();
         personalData.observe(this, personals -> personalAdapter.addItems(personals));
     }
 
@@ -101,7 +108,7 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
             if (resultCode == Permission.PERSONAL_INSERT_REQUEST) {
                 String personal = data.getStringExtra("personal");
                 Personal p = new Gson().fromJson(personal, Personal.class);
-                Completable completable = roomViewModel.insertPersonal(p);
+                Completable completable = personalViewModel.insertPersonal(p);
                 completable.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new CompletableObserver() {
@@ -121,16 +128,39 @@ public class PersonalActivity extends AppCompatActivity implements View.OnClickL
                             }
                         });
 //                aprobacionAdapter.clearByPosition(position);
+            } else if (resultCode == Permission.PERSONAL_UPDATE_REQUEST) {
+                String personal = data.getStringExtra("personal");
+                Personal p = new Gson().fromJson(personal, Personal.class);
+                Completable completable = personalViewModel.updatePersonal(p);
+                completable.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new CompletableObserver() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                Util.toastMensaje(PersonalActivity.this, "Personal Actualizado");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.i("TAG", e.toString());
+                            }
+                        });
             }
+
         }
     }
 
     private void deleteMensaje(Personal p) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Mensaje")
-                .setMessage(String.format("Deseas elimar a %s", p.getNombrePersonal().toUpperCase()))
+                .setMessage(String.format("Deseas elimar a %s ?", p.getNombrePersonal().toUpperCase()))
                 .setPositiveButton("Aceptar", (dialog, which) -> {
-                    roomViewModel.deletePersonal(p)
+                    personalViewModel.deletePersonal(p)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new CompletableObserver() {

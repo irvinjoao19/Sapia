@@ -1,17 +1,13 @@
 package com.dsige.sapia.ui.adapters;
 
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dsige.sapia.R;
-import com.dsige.sapia.model.Personal;
+import com.dsige.sapia.data.local.model.Personal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

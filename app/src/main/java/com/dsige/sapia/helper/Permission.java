@@ -23,6 +23,7 @@ public class Permission {
     public static int SPEECH_REQUEST_DETALLE = 3;
     public static int PERSONAL_REQUEST = 4;
     public static int PERSONAL_INSERT_REQUEST = 5;
+    public static int PERSONAL_UPDATE_REQUEST = 6;
 
 
     public static boolean hasPermissions(Context context, String... permissions) {

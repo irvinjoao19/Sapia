@@ -12,7 +12,7 @@ import android.view.View;
 import com.dsige.sapia.R;
 import com.dsige.sapia.helper.Permission;
 import com.dsige.sapia.helper.Util;
-import com.dsige.sapia.model.Personal;
+import com.dsige.sapia.data.local.model.Personal;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
@@ -27,13 +27,21 @@ public class RegisterPersonalActivity extends AppCompatActivity implements View.
         String cargo = Objects.requireNonNull(editTextCargo.getText()).toString();
         if (!nombre.isEmpty()) {
             if (!cargo.isEmpty()) {
-                Personal p = new Personal();
-                p.setCargoId(1);
-                p.setNombrePersonal(nombre);
-                p.setNombreCargo(cargo);
-                String personal = new Gson().toJson(p);
-                Intent i = new Intent().putExtra("personal", personal);
-                setResult(Permission.PERSONAL_INSERT_REQUEST, i);
+                if (update) {
+                    p.setNombrePersonal(nombre);
+                    p.setNombreCargo(cargo);
+                    String personal = new Gson().toJson(p);
+                    Intent i = new Intent().putExtra("personal", personal);
+                    setResult(Permission.PERSONAL_UPDATE_REQUEST, i);
+                } else {
+                    Personal p = new Personal();
+                    p.setCargoId(1);
+                    p.setNombrePersonal(nombre);
+                    p.setNombreCargo(cargo);
+                    String personal = new Gson().toJson(p);
+                    Intent i = new Intent().putExtra("personal", personal);
+                    setResult(Permission.PERSONAL_INSERT_REQUEST, i);
+                }
                 finish();
             } else {
                 Util.snackBarMensaje(v, "Ingrese cargo");
@@ -53,19 +61,42 @@ public class RegisterPersonalActivity extends AppCompatActivity implements View.
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    Personal p;
+    boolean update = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_personal);
         ButterKnife.bind(this);
-        fabRegister.setOnClickListener(this);
-        bindToolbar();
+
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            p = new Gson().fromJson(b.getString("personal"), Personal.class);
+            update = b.getBoolean("update");
+        }
+        bindToolbar(p);
+        bindUI(p);
     }
 
-    private void bindToolbar() {
+    private void bindToolbar(Personal p) {
         setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Registrar");
+        if (p != null) {
+            Objects.requireNonNull(getSupportActionBar()).setTitle("Actualizar");
+        } else {
+            Objects.requireNonNull(getSupportActionBar()).setTitle("Registrar");
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(view -> finish());
+    }
+
+    private void bindUI(Personal p) {
+        fabRegister.setOnClickListener(this);
+        if (p != null) {
+            editTextNombre.setText(p.getNombrePersonal());
+            editTextCargo.setText(p.getNombreCargo());
+            fabRegister.setText(String.format("%s", "Actualizar"));
+        }
     }
 }
